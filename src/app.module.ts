@@ -4,22 +4,20 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DatabaseModule } from './core/database/database.module';
-import { UsersModule } from './modules/users/users.module';
-import { AuthModule } from './modules/auth/auth.module';
-import { PostsModule } from './modules/posts/posts.module';
-import { AnswersModule } from './answers/answers.module';
-import { ModuleController } from './service/module/module.controller';
+import { AnswersModule } from './modules/answers/answers.module';
+import { QuestionsModule } from './modules/questions/questions.module';
+import { SetsModule } from './modules/sets/sets.module';
+
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     DatabaseModule,
-    UsersModule,
-    AuthModule,
-    PostsModule,
+    QuestionsModule,
+    SetsModule,
     AnswersModule,
   ],
-  controllers: [AppController, ModuleController],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}

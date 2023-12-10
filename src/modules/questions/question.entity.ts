@@ -10,7 +10,6 @@ export class Question extends Model<Question> {
     })
     text: string;
 
-    // create foreign key to set
     @ForeignKey(() => Set)
     @Column({
         type: DataType.INTEGER,
