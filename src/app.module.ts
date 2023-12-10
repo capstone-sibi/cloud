@@ -7,6 +7,8 @@ import { DatabaseModule } from './core/database/database.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { PostsModule } from './modules/posts/posts.module';
+import { AnswersModule } from './answers/answers.module';
+import { ModuleController } from './service/module/module.controller';
 
 @Module({
   imports: [
@@ -15,8 +17,9 @@ import { PostsModule } from './modules/posts/posts.module';
     UsersModule,
     AuthModule,
     PostsModule,
+    AnswersModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, ModuleController],
   providers: [AppService],
 })
 export class AppModule {}

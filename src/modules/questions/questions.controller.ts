@@ -1,24 +1,23 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, NotFoundException, UseGuards, Request } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import { Controller, Get, Post, Put, Delete, Param, Body, NotFoundException, Request } from '@nestjs/common';
 
-import { PostsService } from './posts.service';
-import { Post as PostEntity } from './post.entity';
-import { PostDto } from './dto/post.dto';
+import { QuestionsService } from './questions.service';
+import { Question as QuestionEntity } from './question.entity';
+import { QuestionDto } from './dto/question.dto';
 
-@Controller('posts')
-export class PostsController {
-    constructor(private readonly postService: PostsService) { }
+@Controller('questions')
+export class QuestionsController {
+    constructor(private readonly questionService: QuestionsService) { }
 
     @Get()
     async findAll() {
         // get all posts in the db
-        return await this.postService.findAll();
+        return await this.questionService.findAll();
     }
 
     @Get(':id')
-    async findOne(@Param('id') id: number): Promise<PostEntity> {
+    async findOne(@Param('id') id: number): Promise<QuestionEntity> {
         // find the post with this id
-        const post = await this.postService.findOne(id);
+        const post = await this.questionService.findOne(id);
 
         // if the post doesn't exit in the db, throw a 404 error
         if (!post) {
@@ -29,18 +28,16 @@ export class PostsController {
         return post;
     }
 
-    @UseGuards(AuthGuard('jwt'))
     @Post()
-    async create(@Body() post: PostDto, @Request() req): Promise<PostEntity> {
+    async create(@Body() question: QuestionDto, @Request() req): Promise<QuestionEntity> {
         // create a new post and return the newly created post
-        return await this.postService.create(post, req.user.id);
+        return await this.questionService.create(question);
     }
 
-    @UseGuards(AuthGuard('jwt'))
     @Put(':id')
-    async update(@Param('id') id: number, @Body() post: PostDto, @Request() req): Promise<PostEntity> {
+    async update(@Param('id') id: number, @Body() question: QuestionDto, @Request() req): Promise<QuestionEntity> {
         // get the number of row affected and the updated post
-        const { numberOfAffectedRows, updatedPost } = await this.postService.update(id, post, req.user.id);
+        const { numberOfAffectedRows, updatedQuestion } = await this.questionService.update(id, question);
 
         // if the number of row affected is zero, it means the post doesn't exist in our db
         if (numberOfAffectedRows === 0) {
@@ -48,14 +45,13 @@ export class PostsController {
         }
 
         // return the updated post
-        return updatedPost;
+        return updatedQuestion;
     }
 
-    @UseGuards(AuthGuard('jwt'))
     @Delete(':id')
     async remove(@Param('id') id: number, @Request() req) {
         // delete the post with this id
-        const deleted = await this.postService.delete(id, req.user.id);
+        const deleted = await this.questionService.delete(id);
 
         // if the number of row affected is zero, then the post doesn't exist in our db
         if (deleted === 0) {

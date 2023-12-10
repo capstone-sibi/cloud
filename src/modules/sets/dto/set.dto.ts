@@ -1,11 +1,9 @@
 import { IsNotEmpty, MinLength } from 'class-validator';
 
-export class PostDto {
+export class SetDto {
 
     @IsNotEmpty()
     @MinLength(4)
     readonly title: string;
 
-    @IsNotEmpty()
-    readonly body: string;
 }
