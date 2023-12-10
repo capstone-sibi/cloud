@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 
 import { Answer } from './answer.entity';
 import { AnswerDto } from './dto/answer.dto';
@@ -17,10 +17,29 @@ export class AnswersService {
         return await this.answerRepository.findAll<Answer>();
     }
 
-    async findOne(id): Promise<Answer> {
-        return await this.answerRepository.findOne({
-            where: { id }
+    async findAllByQuestionId(questionId): Promise<Answer[]> {
+        const answers =  await this.answerRepository.findAll({
+            where: { questionId },
+            include: [{ model: Answer }],
         });
+
+        if (!answers || answers.length <= 0) {
+            throw new NotFoundException(`Answers with question id ${questionId} not found!`);
+        }
+
+        return answers;
+    }
+    
+    async findOne(answerId): Promise<Answer> {
+        const answer =  await this.answerRepository.findOne({
+            where: { id: answerId}
+        });
+
+        if (!answer) {
+            throw new NotFoundException(`Answer with id ${answerId} not found!`);
+        }
+
+        return answer;
     }
 
     async update(id, data) {

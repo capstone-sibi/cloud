@@ -1,12 +1,17 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 
 import { Question } from './question.entity';
 import { QuestionDto } from './dto/question.dto';
 import { QUESTION_REPOSITORY } from '../../core/constants';
+import { SetDto } from '../sets/dto/set.dto';
+import { SetsService } from '../sets/sets.service';
+import { Answer } from '../answers/answer.entity';
 
 @Injectable()
 export class QuestionsService {
-    constructor(@Inject(QUESTION_REPOSITORY) private readonly questionRepository: typeof Question) { }
+    constructor(
+        @Inject(QUESTION_REPOSITORY) private readonly questionRepository: typeof Question
+    ) { }
 
     async create(question: QuestionDto): Promise<Question> {
         return await this.questionRepository.create<Question>({ ...question });
@@ -14,19 +19,34 @@ export class QuestionsService {
 
     async findAll(): Promise<Question[]> {
         return await this.questionRepository.findAll<Question>({
-            include: [{ model: Question }],
+            include: [{ model: Answer }],
         });
     }
 
     async findOne(id): Promise<Question> {
-        return await this.questionRepository.findOne({
+        const question =  await this.questionRepository.findOne({
             where: { id },
-            include: [{ model: Question, attributes: { exclude: ['password'] } }],
+            include: [{ model: Answer }],
         });
+
+        if (!question) {
+            throw new NotFoundException(`Question with id ${id} not found!`);
+        }
+
+        return question;
     }
 
-    async delete(id) {
-        return await this.questionRepository.destroy({ where: { id } });
+    async findAllBySetId(setId): Promise<Question[]> {
+        const questions = await this.questionRepository.findAll({
+            where: { setId },
+            include: [{ model: Answer }],
+        });
+
+        if (!questions || questions.length <= 0) {
+            throw new NotFoundException(`Questions with set id ${setId} not found!`);
+        }
+
+        return questions;
     }
 
     async update(id, data) {
