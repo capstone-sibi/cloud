@@ -7,6 +7,7 @@ import { DatabaseModule } from './core/database/database.module';
 import { AnswersModule } from './modules/answers/answers.module';
 import { QuestionsModule } from './modules/questions/questions.module';
 import { SetsModule } from './modules/sets/sets.module';
+import { TtsModule } from './modules/tts/tts.module';
 
 
 @Module({
@@ -16,6 +17,7 @@ import { SetsModule } from './modules/sets/sets.module';
     QuestionsModule,
     SetsModule,
     AnswersModule,
+    TtsModule
   ],
   controllers: [AppController],
   providers: [AppService],

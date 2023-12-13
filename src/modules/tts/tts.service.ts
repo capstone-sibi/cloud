@@ -1,7 +1,7 @@
 import { Storage } from '@google-cloud/storage';
 import textToSpeech from '@google-cloud/text-to-speech';
 import { Injectable, HttpException, HttpStatus  } from '@nestjs/common';
-import fs from 'fs';
+import * as fs from 'fs';
 import { TtsDto } from './dto/tts.dto';
 
 @Injectable()
@@ -21,11 +21,11 @@ export class TtsService {
         try {
             const baseName = tts.text.toLowerCase();
             const fileName = `${baseName}.mp3`;
-            const localFile = `${this.localPath}/${fileName}`
+            const localFile = `${this.localPath}/${baseName}`
             const fileExists = await this.checkFileExists(fileName);
     
             if (fileExists) {
-                return `https://storage.googleapis.com/${this.bucketName}/audio/${fileName}`;
+                return `https://storage.googleapis.com/${this.bucketName}/audio/${encodeURIComponent(fileName)}`;
             }
             // check if in cloud storage already exist
             const client = new textToSpeech.TextToSpeechClient({
@@ -38,12 +38,12 @@ export class TtsService {
             };
     
             const [response] = await client.synthesizeSpeech(request);
-
+            console.log(localFile)
             fs.writeFileSync(localFile, response.audioContent, 'binary');
 
             await this.uploadToStorage(fileName, localFile);
 
-            return `https://storage.googleapis.com/${this.bucketName}/audio/${fileName}`;
+            return `https://storage.googleapis.com/${this.bucketName}/audio/${encodeURIComponent(fileName)}`;
         } catch (error) {
             throw new HttpException(`Could not get audio file. Error: ${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -67,7 +67,6 @@ export class TtsService {
             await file.save(fileContent, {
                 metadata: { contentType: 'audio/mpeg' },
             });
-            await file.makePublic();
         } catch (error) {
             throw new HttpException(`Could not upload file ${fileName}. Error: ${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
         }
