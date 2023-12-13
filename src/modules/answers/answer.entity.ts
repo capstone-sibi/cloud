@@ -13,7 +13,7 @@ export class Answer extends Model<Answer> {
         type: DataType.BOOLEAN,
         allowNull: false,
     })
-    is_correct: boolean;
+    isCorrect: boolean;
 
     @ForeignKey(() => Question)
     @Column({
