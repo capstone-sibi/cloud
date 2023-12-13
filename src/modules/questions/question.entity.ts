@@ -11,6 +11,12 @@ export class Question extends Model<Question> {
     })
     text: string;
 
+    @Column({
+        type: DataType.STRING,
+        allowNull: true,
+    })
+    filename: string;
+
     @ForeignKey(() => Set)
     @Column({
         type: DataType.INTEGER,
