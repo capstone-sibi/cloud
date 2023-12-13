@@ -1,29 +1,75 @@
-import { Injectable } from '@nestjs/common';
+import { Storage } from '@google-cloud/storage';
 import textToSpeech from '@google-cloud/text-to-speech';
+import { Injectable, HttpException, HttpStatus  } from '@nestjs/common';
 import fs from 'fs';
-import util from 'util';
 import { TtsDto } from './dto/tts.dto';
 
 @Injectable()
 export class TtsService {
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    constructor() { }
+    private storage: Storage;
+    private bucketName = process.env.BUCKET_NAME;
+    private audioFolder = 'audio';
+    private localPath = `${__dirname}/../../../assets/${this.audioFolder}`;
+
+    constructor() { 
+        this.storage = new Storage({
+            keyFilename: process.env.CLOUD_STORAGE_CREDENTIALS,
+        });
+    }
 
     async getAudioTts(tts : TtsDto) {
-        // check if in cloud storage already exist
-        const client = new textToSpeech.TextToSpeechClient();
-        const request = {
-            input: { text: tts.text },
-            voice: { languageCode: 'id-ID', name: 'id-ID-Wavenet-A' },
-            audioConfig: { audioEncoding: "MP3" as const },
-        };
+        try {
+            const baseName = tts.text.toLowerCase();
+            const fileName = `${baseName}.mp3`;
+            const localFile = `${this.localPath}/${fileName}`
+            const fileExists = await this.checkFileExists(fileName);
+    
+            if (fileExists) {
+                return `https://storage.googleapis.com/${this.bucketName}/audio/${fileName}`;
+            }
+            // check if in cloud storage already exist
+            const client = new textToSpeech.TextToSpeechClient({
+                keyFilename: process.env.TTS_CREDENTIALS,
+            });
+            const request = {
+                input: { text: tts.text },
+                voice: { languageCode: 'id-ID', name: 'id-ID-Wavenet-A' },
+                audioConfig: { audioEncoding: "MP3" as const },
+            };
+    
+            const [response] = await client.synthesizeSpeech(request);
 
-        const [response] = await client.synthesizeSpeech(request);
-        const writeFile = util.promisify(fs.writeFile);
-        const outputFile = `linktocloudstorage/${tts.text}.mp3`;
-        await writeFile(outputFile, response.audioContent, 'binary');
-        // store into bucket
-        // return link
-        return outputFile;
+            fs.writeFileSync(localFile, response.audioContent, 'binary');
+
+            await this.uploadToStorage(fileName, localFile);
+
+            return `https://storage.googleapis.com/${this.bucketName}/audio/${fileName}`;
+        } catch (error) {
+            throw new HttpException(`Could not get audio file. Error: ${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private async checkFileExists(fileName: string): Promise<boolean> {
+        try {
+            const filePath = `${this.audioFolder}/${fileName}`;
+            const [exists] = await this.storage.bucket(this.bucketName).file(filePath).exists();
+            return exists;
+        } catch (error) {
+            throw new HttpException(`Could not check file ${fileName}. Error: ${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private async uploadToStorage(fileName: string, localFile: string): Promise<void> {
+        try {
+            const filePath = `${this.audioFolder}/${fileName}`;
+            const fileContent = fs.readFileSync(localFile);
+            const file = this.storage.bucket(this.bucketName).file(filePath);
+            await file.save(fileContent, {
+                metadata: { contentType: 'audio/mpeg' },
+            });
+            await file.makePublic();
+        } catch (error) {
+            throw new HttpException(`Could not upload file ${fileName}. Error: ${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
