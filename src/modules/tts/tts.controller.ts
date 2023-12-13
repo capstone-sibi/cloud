@@ -10,7 +10,7 @@ export class TtsController {
     ) { }
 
     @Post()
-    @ResponseMessage('Successfully created set')
+    @ResponseMessage('Successfully get audio file from text')
     async create(@Body() tts: TtsDto, @Request() req) {
         return await this.ttsService.getAudioTts(tts);
     }
