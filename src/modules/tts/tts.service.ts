@@ -12,9 +12,7 @@ export class TtsService {
     private localPath = `${__dirname}/../../../assets/${this.audioFolder}`;
 
     constructor() { 
-        this.storage = new Storage({
-            keyFilename: process.env.CLOUD_STORAGE_CREDENTIALS,
-        });
+        this.storage = new Storage();
     }
 
     async getAudioTts(tts : TtsDto) {
