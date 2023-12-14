@@ -2,6 +2,7 @@ import { Storage } from '@google-cloud/storage';
 import textToSpeech from '@google-cloud/text-to-speech';
 import { Injectable, HttpException, HttpStatus  } from '@nestjs/common';
 import * as fs from 'fs';
+import * as path from 'path';
 import { TtsDto } from './dto/tts.dto';
 
 @Injectable()
@@ -37,7 +38,11 @@ export class TtsService {
             };
             console.log(localFile)
             const [response] = await client.synthesizeSpeech(request);
-            console.log(response)
+
+            const dir = path.join('/tmp', this.audioFolder);
+            if (!fs.existsSync(dir)) {
+                fs.mkdirSync(dir, { recursive: true });
+            }
             fs.writeFileSync(localFile, response.audioContent, 'binary');
             console.log('sini');
             await this.uploadToStorage(fileName, localFile);
