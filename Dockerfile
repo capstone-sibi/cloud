@@ -5,19 +5,16 @@ FROM node:18-alpine AS development
 WORKDIR /usr/src/app
 
 # Copy package.json and yarn.lock first to leverage Docker cache
-COPY --chown=node:node package*.json yarn.lock ./
+COPY package*.json yarn.lock ./
 
 # Install dependencies
 RUN yarn install
 
 # Copy the rest of your application's code
-COPY --chown=node:node . .
+COPY . .
 
 # Compile TypeScript to JavaScript
 RUN yarn build
-
-# Use a non-root user for better security
-USER node
 
 # Start the application
 CMD [ "node", "dist/main.js" ]
