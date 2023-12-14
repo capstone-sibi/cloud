@@ -16,7 +16,5 @@ COPY . .
 # Compile TypeScript to JavaScript
 RUN yarn build
 
-EXPOSE 8080
-
 # Start the application
 CMD [ "node", "dist/main.js" ]
