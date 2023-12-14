@@ -1,8 +1,8 @@
 name: Deploy to Cloud Run
 on:
   push:
-    branches:
-      - main
+    branches: [main, chore/*]
+    
 env:
   GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   RUN_REGION: asia-southeast2
@@ -24,6 +24,16 @@ jobs:
         with:
           version: '>= 363.0.0'
           project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - id: secrets
+        name: Fetch Secrets from Secret Manager
+        uses: "google-github-actions/get-secretmanager-secrets@v1"
+        with:
+          secrets: |-
+            SECRET_MANAGER_SHELTER_CLIENT_SECRET:${{ secrets.SECRET_MANAGER_SHELTER_CLIENT_SECRET }}
+            SECRET_MANAGER_ADOPTER_CLIENT_SECRET:${{ secrets.SECRET_MANAGER_ADOPTER_CLIENT_SECRET }}
+            SECRET_MANAGER_DATABASE_CONFIG:${{ secrets.SECRET_MANAGER_DATABASE_CONFIG }}
+            SECRET_MANAGER_STORAGE_CONFIG:${{ secrets.SECRET_MANAGER_STORAGE_CONFIG }}
         
       - name: Retrieve secrets from Secret Manager
         run: |
@@ -45,8 +55,22 @@ jobs:
         run: gcloud builds submit --tag asia-southeast2-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_NAME/sibi-backend-image:$GITHUB_SHA .
         
       - name: Deploy
-        run: |
-          gcloud run deploy sibi-dev \
-            --image asia-southeast2-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_NAME/sibi-backend-image:$GITHUB_SHA \
-            --platform managed \
-            --region $RUN_REGION
+        uses: 'google-github-actions/deploy-cloudrun@v2'
+        with:
+          env_vars: |
+            DB_HOST=$(gcloud secrets versions access latest --secret="db-host")
+            DB_PORT=$(gcloud secrets versions access latest --secret="db-port")
+            GCP_PROJECT_ID=$(gcloud secrets versions access latest --secret="gcp-project-id")
+            DB_USER=$(gcloud secrets versions access latest --secret="db-user")
+            DB_PASS=$(gcloud secrets versions access latest --secret="db-pass")
+            DB_DIALECT=$(gcloud secrets versions access latest --secret="db-dialect")
+            DB_NAME=$(gcloud secrets versions access latest --secret="db-name")
+            PORT=$(gcloud secrets versions access latest --secret="port")
+            CLOUD_STORAGE_CREDENTIALS=$(gcloud secrets versions access latest --secret="cloud-storage-credentials")
+            TTS_CREDENTIALS=$(gcloud secrets versions access latest --secret="tts-credentials")
+            GCP_ARTIFACT_NAME=$(gcloud secrets versions access latest --secret="gcp-artifact-name")
+            BUCKET_NAME=$(gcloud secrets versions access latest --secret="bucket-name")
+          service: sibi-dev
+          image: asia-southeast2-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_NAME/sibi-backend-image:$GITHUB_SHA
+          region: asia-southeast2
+          platform: managed
