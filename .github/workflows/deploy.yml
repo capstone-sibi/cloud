@@ -63,4 +63,3 @@ jobs:
           service: sibi-dev
           image: asia-southeast2-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_NAME/sibi-backend-image:$GITHUB_SHA
           region: asia-southeast2
-          platform: managed
