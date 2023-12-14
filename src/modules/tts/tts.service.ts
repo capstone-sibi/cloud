@@ -9,7 +9,7 @@ export class TtsService {
     private storage: Storage;
     private bucketName = process.env.BUCKET_NAME;
     private audioFolder = 'audio';
-    private localPath = `${__dirname}/../../../assets/${this.audioFolder}`;
+    private localPath = `${__dirname}/assets/${this.audioFolder}`;
 
     constructor() { 
         this.storage = new Storage();
@@ -19,7 +19,7 @@ export class TtsService {
         try {
             const baseName = tts.text.toLowerCase();
             const fileName = `${baseName}.mp3`;
-            const localFile = `${this.localPath}/${baseName}`
+            const localFile = `${this.localPath}/${fileName}`
             const fileExists = await this.checkFileExists(fileName);
 
             if (fileExists) {
@@ -29,13 +29,12 @@ export class TtsService {
             const client = new textToSpeech.TextToSpeechClient({
                 keyFilename: process.env.TTS_CREDENTIALS,
             });
-            console.log(client)
+
             const request = {
                 input: { text: tts.text },
                 voice: { languageCode: 'id-ID', name: 'id-ID-Wavenet-A' },
                 audioConfig: { audioEncoding: "MP3" as const },
             };
-            console.log(request)
             console.log(localFile)
             const [response] = await client.synthesizeSpeech(request);
             console.log(response)
