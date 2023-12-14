@@ -44,7 +44,7 @@ jobs:
       # Build and push image to Google Container Registry
       - name: Build
         run: |
-        - gcloud builds submit \
+         - gcloud builds submit \
             --tag asia-southeast2-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_NAME/sibi-backend-image:$GITHUB_SHA . \
             --substitutions=DB_HOST=${DB_HOST}, \
             DB_PORT=${{ secrets.DB_PORT }}, \
