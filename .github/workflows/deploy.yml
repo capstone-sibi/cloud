@@ -4,10 +4,10 @@ on:
     branches: [main, chore/*]
 
 env:
-  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GCP_PROJECT_ID: capstone-sibi
   RUN_REGION: asia-southeast2
   CICD_CREDENTIALS: ${{ secrets.CICD_CREDENTIALS }}
-  GCP_ARTIFACT_NAME: ${{ secrets.GCP_ARTIFACT_NAME }}
+  GCP_ARTIFACT_NAME: artifact-sibi
 jobs:
   deploy:
     name: Deploy to Cloud Run
