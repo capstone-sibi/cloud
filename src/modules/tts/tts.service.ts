@@ -45,7 +45,7 @@ export class TtsService {
 
             return `https://storage.googleapis.com/${this.bucketName}/audio/${encodeURIComponent(fileName)}`;
         } catch (error) {
-            throw new HttpException(`Could not get audio file. Error: ${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new HttpException(`Could not get audio file`, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -55,7 +55,7 @@ export class TtsService {
             const [exists] = await this.storage.bucket(this.bucketName).file(filePath).exists();
             return exists;
         } catch (error) {
-            throw new HttpException(`Could not check file ${fileName}. Error: ${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new HttpException(`Could not check file ${fileName}`, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -68,7 +68,7 @@ export class TtsService {
                 metadata: { contentType: 'audio/mpeg' },
             });
         } catch (error) {
-            throw new HttpException(`Could not upload file ${fileName}. Error: ${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new HttpException(`Could not upload file ${fileName}`, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

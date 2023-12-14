@@ -30,8 +30,4 @@ jobs:
         run: gcloud builds submit --tag asia-southeast2-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_NAME/sibi-backend-image:$GITHUB_SHA .
         
       - name: Deploy
-        uses: 'google-github-actions/deploy-cloudrun@v2'
-        with:
-          service: sibi-dev
-          image: asia-southeast2-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_NAME/sibi-backend-image:$GITHUB_SHA
-          region: asia-southeast2
+        run: gcloud run deploy sibi-dev --image asia-southeast2-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_NAME/sibi-backend-image:$GITHUB_SHA --platform managed --region $RUN_REGION
