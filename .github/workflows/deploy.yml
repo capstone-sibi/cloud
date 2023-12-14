@@ -34,9 +34,8 @@ jobs:
             echo "PORT=${{ secrets.PORT }}" >> $GITHUB_ENV
             echo "DB_DIALECT=${{ secrets.DB_DIALECT }}" >> $GITHUB_ENV
             echo "DB_NAME=${{ secrets.DB_NAME }}" >> $GITHUB_ENV
-            echo "CLOUD_STORAGE_CREDENTIALS=${{ secrets.CLOUD_STORAGE_CREDENTIALS }}" >> $GITHUB_ENV
-            echo "TTS_CREDENTIALS=${{ secrets.TTS_CREDENTIALS }}" >> $GITHUB_ENV
-            echo "CICD_CREDENTIALS=${{ secrets.CICD_CREDENTIALS }}" >> $GITHUB_ENV
+            echo "CLOUD_STORAGE_CREDENTIALS=$(echo '${{ secrets.CLOUD_STORAGE_CREDENTIALS }}' | base64 -d)" >> $GITHUB_ENV
+            echo "TTS_CREDENTIALS=$(echo '${{ secrets.TTS_CREDENTIALS }}' | base64 -d)" >> $GITHUB_ENV
             echo "BUCKET_NAME=${{ secrets.BUCKET_NAME }}" >> $GITHUB_ENV
             echo "GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}" >> $GITHUB_ENV
             echo "GCP_ARTIFACT_NAME=${{ secrets.GCP_ARTIFACT_NAME }}" >> $GITHUB_ENV
@@ -55,7 +54,6 @@ jobs:
             DB_NAME=${{ secrets.DB_NAME }}, \
             CLOUD_STORAGE_CREDENTIALS=${{ secrets.CLOUD_STORAGE_CREDENTIALS }}, \
             TTS_CREDENTIALS=${{ secrets.TTS_CREDENTIALS }}, \
-            CICD_CREDENTIALS=${{ secrets.CICD_CREDENTIALS }}, \
             BUCKET_NAME=${{ secrets.BUCKET_NAME }}, \
             GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}, \
             GCP_ARTIFACT_NAME=${{ secrets.GCP_ARTIFACT_NAME }}
