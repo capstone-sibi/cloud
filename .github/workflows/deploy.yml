@@ -57,6 +57,4 @@ jobs:
             DB_DIALECT=$(gcloud secrets versions access latest --secret="db-dialect"),\
             DB_NAME=$(gcloud secrets versions access latest --secret="db-name"),\
             PORT=$(gcloud secrets versions access latest --secret="port"),\
-            CLOUD_STORAGE_CREDENTIALS=$(gcloud secrets versions access latest --secret="cloud-storage-credentials"),\
-            TTS_CREDENTIALS=$(gcloud secrets versions access latest --secret="tts-credentials"),\
             BUCKET_NAME=$(gcloud secrets versions access latest --secret="bucket-name")
