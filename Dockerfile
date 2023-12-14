@@ -19,5 +19,7 @@ RUN yarn build
 # Use a non-root user for better security
 USER node
 
+EXPOSE 3000
+
 # Start the application
 CMD [ "node", "dist/main.js" ]
