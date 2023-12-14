@@ -7,7 +7,6 @@ env:
   GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   RUN_REGION: asia-southeast2
   CICD_CREDENTIALS: ${{ secrets.CICD_CREDENTIALS }}
-  GCP_ARTIFACT_NAME: ${{ secrets.GCP_ARTIFACT_NAME }}
 jobs:
   deploy:
     name: Deploy to Cloud Run
@@ -25,38 +24,38 @@ jobs:
           version: '>= 363.0.0'
           project_id: ${{ secrets.GCP_PROJECT_ID }}
         
-      - name: Set Environment Variables
+      - name: Retrieve secrets from Secret Manager
         run: |
-            echo "DB_HOST=${{ secrets.DB_HOST }}" >> $GITHUB_ENV
-            echo "DB_PORT=${{ secrets.DB_PORT }}" >> $GITHUB_ENV
-            echo "DB_USER=${{ secrets.DB_USER }}" >> $GITHUB_ENV
-            echo "DB_PASS=${{ secrets.DB_PASS }}" >> $GITHUB_ENV
-            echo "PORT=${{ secrets.PORT }}" >> $GITHUB_ENV
-            echo "DB_DIALECT=${{ secrets.DB_DIALECT }}" >> $GITHUB_ENV
-            echo "DB_NAME=${{ secrets.DB_NAME }}" >> $GITHUB_ENV
-            echo "CLOUD_STORAGE_CREDENTIALS=$(echo '${{ secrets.CLOUD_STORAGE_CREDENTIALS }}' | base64 -d)" >> $GITHUB_ENV
-            echo "TTS_CREDENTIALS=$(echo '${{ secrets.TTS_CREDENTIALS }}' | base64 -d)" >> $GITHUB_ENV
-            echo "BUCKET_NAME=${{ secrets.BUCKET_NAME }}" >> $GITHUB_ENV
-            echo "GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}" >> $GITHUB_ENV
-            echo "GCP_ARTIFACT_NAME=${{ secrets.GCP_ARTIFACT_NAME }}" >> $GITHUB_ENV
+          export DB_HOST=$(gcloud secrets versions access latest --secret="db-host")
+          export DB_PORT=$(gcloud secrets versions access latest --secret="db-port")
+          export GCP_PROJECT_ID=$(gcloud secrets versions access latest --secret="gcp-project-id")
+          export DB_USER=$(gcloud secrets versions access latest --secret="db-user")
+          export DB_PASS=$(gcloud secrets versions access latest --secret="db-pass")
+          export DB_DIALECT=$(gcloud secrets versions access latest --secret="db-dialect")
+          export DB_NAME=$(gcloud secrets versions access latest --secret="db-name")
+          export PORT=$(gcloud secrets versions access latest --secret="port")
+          export CLOUD_STORAGE_CREDENTIALS=$(gcloud secrets versions access latest --secret="cloud-storage-credentials")
+          export TTS_CREDENTIALS=$(gcloud secrets versions access latest --secret="tts-credentials")
+          export GCP_ARTIFACT_NAME=$(gcloud secrets versions access latest --secret="gcp-artifact-name")
+          export BUCKET_NAME=$(gcloud secrets versions access latest --secret="bucket-name")
 
       # Build and push image to Google Container Registry
       - name: Build
-        run: |
-         - gcloud builds submit \
-            --tag asia-southeast2-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_NAME/sibi-backend-image:$GITHUB_SHA . \
-            --substitutions=DB_HOST=${DB_HOST}, \
-            DB_PORT=${{ secrets.DB_PORT }}, \
-            DB_USER=${{ secrets.DB_USER }}, \
-            DB_PASS=${{ secrets.DB_PASS }}, \
-            PORT=${{ secrets.PORT }}, \
-            DB_DIALECT=${{ secrets.DB_DIALECT }}, \
-            DB_NAME=${{ secrets.DB_NAME }}, \
-            CLOUD_STORAGE_CREDENTIALS=${{ secrets.CLOUD_STORAGE_CREDENTIALS }}, \
-            TTS_CREDENTIALS=${{ secrets.TTS_CREDENTIALS }}, \
-            BUCKET_NAME=${{ secrets.BUCKET_NAME }}, \
-            GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}, \
-            GCP_ARTIFACT_NAME=${{ secrets.GCP_ARTIFACT_NAME }}
+        run: gcloud builds submit --tag asia-southeast2-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_NAME/sibi-backend-image:$GITHUB_SHA .
         
       - name: Deploy
-        run: gcloud run deploy sibi-dev --image asia-southeast2-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_NAME/sibi-backend-image:$GITHUB_SHA --platform managed --region $RUN_REGION --port 8080
+        run: |
+          gcloud run deploy sibi-dev \
+            --image asia-southeast2-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_NAME/sibi-backend-image:$GITHUB_SHA \
+            --platform managed \
+            --region $RUN_REGION \
+            --set-env-vars DB_HOST=$(gcloud secrets versions access latest --secret="db-host"),\
+            DB_PORT=$(gcloud secrets versions access latest --secret="db-port"),\
+            DB_USER=$(gcloud secrets versions access latest --secret="db-user"),\
+            DB_PASS=$(gcloud secrets versions access latest --secret="db-pass"),\
+            DB_DIALECT=$(gcloud secrets versions access latest --secret="db-dialect"),\
+            DB_NAME=$(gcloud secrets versions access latest --secret="db-name"),\
+            PORT=$(gcloud secrets versions access latest --secret="port"),\
+            CLOUD_STORAGE_CREDENTIALS=$(gcloud secrets versions access latest --secret="cloud-storage-credentials"),\
+            TTS_CREDENTIALS=$(gcloud secrets versions access latest --secret="tts-credentials"),\
+            BUCKET_NAME=$(gcloud secrets versions access latest --secret="bucket-name")
