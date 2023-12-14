@@ -9,7 +9,7 @@ export class TtsService {
     private storage: Storage;
     private bucketName = process.env.BUCKET_NAME;
     private audioFolder = 'audio';
-    private localPath = `${__dirname}/assets/${this.audioFolder}`;
+    private localPath = `usr/src/app/assets/${this.audioFolder}`;
 
     constructor() { 
         this.storage = new Storage();
@@ -29,6 +29,7 @@ export class TtsService {
             const client = new textToSpeech.TextToSpeechClient({
                 keyFilename: process.env.TTS_CREDENTIALS,
             });
+            console.log(process.env.TTS_CREDENTIALS)
 
             const request = {
                 input: { text: tts.text },
