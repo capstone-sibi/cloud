@@ -49,12 +49,4 @@ jobs:
           gcloud run deploy sibi-dev \
             --image asia-southeast2-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_NAME/sibi-backend-image:$GITHUB_SHA \
             --platform managed \
-            --region $RUN_REGION \
-            --set-env-vars DB_HOST=$(gcloud secrets versions access latest --secret="db-host"),\
-            DB_PORT=$(gcloud secrets versions access latest --secret="db-port"),\
-            DB_USER=$(gcloud secrets versions access latest --secret="db-user"),\
-            DB_PASS=$(gcloud secrets versions access latest --secret="db-pass"),\
-            DB_DIALECT=$(gcloud secrets versions access latest --secret="db-dialect"),\
-            DB_NAME=$(gcloud secrets versions access latest --secret="db-name"),\
-            PORT=$(gcloud secrets versions access latest --secret="port"),\
-            BUCKET_NAME=$(gcloud secrets versions access latest --secret="bucket-name")
+            --region $RUN_REGION
