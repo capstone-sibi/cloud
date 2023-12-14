@@ -43,21 +43,22 @@ jobs:
 
       # Build and push image to Google Container Registry
       - name: Build
-        run: gcloud builds submit \
-        --tag asia-southeast2-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_NAME/sibi-backend-image:$GITHUB_SHA . \
-        --substitutions=DB_HOST=${{ secrets.DB_HOST }}, \
-        DB_PORT=${{ secrets.DB_PORT }}, \
-        DB_USER=${{ secrets.DB_USER }}, \
-        DB_PASS=${{ secrets.DB_PASS }}, \
-        PORT=${{ secrets.PORT }}, \
-        DB_DIALECT=${{ secrets.DB_DIALECT }}, \
-        DB_NAME=${{ secrets.DB_NAME }}, \
-        CLOUD_STORAGE_CREDENTIALS=${{ secrets.CLOUD_STORAGE_CREDENTIALS }}, \
-        TTS_CREDENTIALS=${{ secrets.TTS_CREDENTIALS }}, \
-        CICD_CREDENTIALS=${{ secrets.CICD_CREDENTIALS }}, \
-        BUCKET_NAME=${{ secrets.BUCKET_NAME }}, \
-        GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}, \
-        GCP_ARTIFACT_NAME=${{ secrets.GCP_ARTIFACT_NAME }}
+        run: |
+        - gcloud builds submit \
+            --tag asia-southeast2-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_NAME/sibi-backend-image:$GITHUB_SHA . \
+            --substitutions=DB_HOST=${DB_HOST}, \
+            DB_PORT=${{ secrets.DB_PORT }}, \
+            DB_USER=${{ secrets.DB_USER }}, \
+            DB_PASS=${{ secrets.DB_PASS }}, \
+            PORT=${{ secrets.PORT }}, \
+            DB_DIALECT=${{ secrets.DB_DIALECT }}, \
+            DB_NAME=${{ secrets.DB_NAME }}, \
+            CLOUD_STORAGE_CREDENTIALS=${{ secrets.CLOUD_STORAGE_CREDENTIALS }}, \
+            TTS_CREDENTIALS=${{ secrets.TTS_CREDENTIALS }}, \
+            CICD_CREDENTIALS=${{ secrets.CICD_CREDENTIALS }}, \
+            BUCKET_NAME=${{ secrets.BUCKET_NAME }}, \
+            GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}, \
+            GCP_ARTIFACT_NAME=${{ secrets.GCP_ARTIFACT_NAME }}
         
       - name: Deploy
         run: gcloud run deploy sibi-dev --image asia-southeast2-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_NAME/sibi-backend-image:$GITHUB_SHA --platform managed --region $RUN_REGION --port 8080
