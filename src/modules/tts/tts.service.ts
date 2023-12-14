@@ -9,7 +9,7 @@ export class TtsService {
     private storage: Storage;
     private bucketName = process.env.BUCKET_NAME;
     private audioFolder = 'audio';
-    private localPath = `usr/src/app/assets/${this.audioFolder}`;
+    private localPath = `/tmp/${this.audioFolder}`;
 
     constructor() { 
         this.storage = new Storage();
