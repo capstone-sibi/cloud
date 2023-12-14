@@ -9,7 +9,7 @@ export class TtsService {
     private storage: Storage;
     private bucketName = process.env.BUCKET_NAME;
     private audioFolder = 'audio';
-    private localPath = `usr/src/app/assets/${this.audioFolder}`;
+    private localPath = `/usr/src/app/assets/${this.audioFolder}`;
 
     constructor() { 
         this.storage = new Storage();
@@ -25,11 +25,10 @@ export class TtsService {
             if (fileExists) {
                 return `https://storage.googleapis.com/${this.bucketName}/audio/${encodeURIComponent(fileName)}`;
             }
-
+            const credentials = JSON.parse(process.env.TTS_CREDENTIALS);
             const client = new textToSpeech.TextToSpeechClient({
-                credentials: process.env.TTS_CREDENTIALS as any,
+                credentials: credentials
             });
-            console.log(process.cwd())
 
             const request = {
                 input: { text: tts.text },
