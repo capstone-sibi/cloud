@@ -2,7 +2,7 @@ name: Deploy to Cloud Run
 on:
   push:
     branches: [main, chore/*]
-    
+
 env:
   GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   RUN_REGION: asia-southeast2
@@ -24,16 +24,6 @@ jobs:
         with:
           version: '>= 363.0.0'
           project_id: ${{ secrets.GCP_PROJECT_ID }}
-
-      - id: secrets
-        name: Fetch Secrets from Secret Manager
-        uses: "google-github-actions/get-secretmanager-secrets@v1"
-        with:
-          secrets: |-
-            SECRET_MANAGER_SHELTER_CLIENT_SECRET:${{ secrets.SECRET_MANAGER_SHELTER_CLIENT_SECRET }}
-            SECRET_MANAGER_ADOPTER_CLIENT_SECRET:${{ secrets.SECRET_MANAGER_ADOPTER_CLIENT_SECRET }}
-            SECRET_MANAGER_DATABASE_CONFIG:${{ secrets.SECRET_MANAGER_DATABASE_CONFIG }}
-            SECRET_MANAGER_STORAGE_CONFIG:${{ secrets.SECRET_MANAGER_STORAGE_CONFIG }}
         
       - name: Retrieve secrets from Secret Manager
         run: |
