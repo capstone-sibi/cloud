@@ -23,11 +23,12 @@ export class TtsService {
             const fileName = `${baseName}.mp3`;
             const localFile = `${this.localPath}/${baseName}`
             const fileExists = await this.checkFileExists(fileName);
-    
+            console.log(fileName)
+            console.log(fileExists)
             if (fileExists) {
                 return `https://storage.googleapis.com/${this.bucketName}/audio/${encodeURIComponent(fileName)}`;
             }
-            // check if in cloud storage already exist
+
             const client = new textToSpeech.TextToSpeechClient({
                 keyFilename: process.env.TTS_CREDENTIALS,
             });
@@ -52,7 +53,9 @@ export class TtsService {
     private async checkFileExists(fileName: string): Promise<boolean> {
         try {
             const filePath = `${this.audioFolder}/${fileName}`;
+            console.log(filePath)
             const [exists] = await this.storage.bucket(this.bucketName).file(filePath).exists();
+            console.log(exists[0])
             return exists;
         } catch (error) {
             throw new HttpException(`Could not check file ${fileName}`, HttpStatus.INTERNAL_SERVER_ERROR);
