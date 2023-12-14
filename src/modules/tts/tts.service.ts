@@ -44,7 +44,7 @@ export class TtsService {
             console.log('sana');
             return `https://storage.googleapis.com/${this.bucketName}/audio/${encodeURIComponent(fileName)}`;
         } catch (error) {
-            throw new HttpException(`Could not get audio file`, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new HttpException(`Could not get audio file. Error : ${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
