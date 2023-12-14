@@ -4,10 +4,10 @@ on:
     branches:
       - main
 env:
-  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   RUN_REGION: asia-southeast2
   CICD_CREDENTIALS: ${{ secrets.CICD_CREDENTIALS }}
-  REPO_NAME: ${{ secrets.GCP_ARTIFACT_NAME }}
+  GCP_ARTIFACT_NAME: ${{ secrets.GCP_ARTIFACT_NAME }}
 jobs:
   deploy:
     name: Deploy to Cloud Run
@@ -27,7 +27,7 @@ jobs:
 
       # Build and push image to Google Container Registry
       - name: Build
-        run: gcloud builds submit --tag asia-southeast2-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/sibi-backend-image:$GITHUB_SHA .
+        run: gcloud builds submit --tag asia-southeast2-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_NAME/sibi-backend-image:$GITHUB_SHA .
         
       - name: Deploy
-        run: gcloud run deploy sibi-dev --image asia-southeast2-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/sibi-backend-image:$GITHUB_SHA --platform managed --region $RUN_REGION
+        run: gcloud run deploy sibi-dev --image asia-southeast2-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_NAME/sibi-backend-image:$GITHUB_SHA --platform managed --region $RUN_REGION
