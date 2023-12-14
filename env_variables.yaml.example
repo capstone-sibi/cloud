@@ -1,0 +1,7 @@
+env_variables:
+  DB_HOST:
+  DB_USER:
+  DB_PASS:
+  DB_NAME:
+  DB_DIALECT:
+  DB_PORT:
