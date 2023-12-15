@@ -36,7 +36,6 @@ export class TtsService {
                 voice: { languageCode: 'id-ID', name: 'id-ID-Wavenet-A' },
                 audioConfig: { audioEncoding: "MP3" as const },
             };
-            console.log(localFile)
             const [response] = await client.synthesizeSpeech(request);
 
             const dir = path.join('/tmp', this.audioFolder);
@@ -44,9 +43,7 @@ export class TtsService {
                 fs.mkdirSync(dir, { recursive: true });
             }
             fs.writeFileSync(localFile, response.audioContent, 'binary');
-            console.log('sini');
             await this.uploadToStorage(fileName, localFile);
-            console.log('sana');
             return `https://storage.googleapis.com/${this.bucketName}/audio/${encodeURIComponent(fileName)}`;
         } catch (error) {
             throw new HttpException(`Could not get audio file. Error : ${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
