@@ -20,7 +20,6 @@ export class AnswersService {
     async findAllByQuestionId(questionId): Promise<Answer[]> {
         const answers =  await this.answerRepository.findAll({
             where: { questionId },
-            include: [{ model: Answer }],
             order: [['id', 'ASC']]
         });
 
