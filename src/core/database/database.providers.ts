@@ -5,6 +5,7 @@ import { databaseConfig } from './database.config';
 import { Answer } from '../../modules/answers/answer.entity';
 import { Question } from '../../modules/questions/question.entity';
 import { Set } from '../../modules/sets/set.entity';
+import { Dictionary } from '../../modules/dictionary/dictionary.entity';
 
 export const databaseProviders = [
     {
@@ -25,7 +26,7 @@ export const databaseProviders = [
                     config = databaseConfig.development;
             }
             const sequelize = new Sequelize(config);
-            sequelize.addModels([Answer, Question, Set]);
+            sequelize.addModels([Answer, Question, Set, Dictionary]);
             await sequelize.sync();
             return sequelize;
         },

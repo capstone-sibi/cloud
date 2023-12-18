@@ -8,7 +8,7 @@ import { AnswersModule } from './modules/answers/answers.module';
 import { QuestionsModule } from './modules/questions/questions.module';
 import { SetsModule } from './modules/sets/sets.module';
 import { TtsModule } from './modules/tts/tts.module';
-
+import { DictionaryModule } from './modules/dictionary/dictionary.module';
 
 @Module({
   imports: [
@@ -17,7 +17,8 @@ import { TtsModule } from './modules/tts/tts.module';
     QuestionsModule,
     SetsModule,
     AnswersModule,
-    TtsModule
+    TtsModule,
+    DictionaryModule
   ],
   controllers: [AppController],
   providers: [AppService],
