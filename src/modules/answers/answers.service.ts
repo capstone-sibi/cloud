@@ -21,6 +21,7 @@ export class AnswersService {
         const answers =  await this.answerRepository.findAll({
             where: { questionId },
             include: [{ model: Answer }],
+            order: [['id', 'ASC']]
         });
 
         if (!answers || answers.length <= 0) {

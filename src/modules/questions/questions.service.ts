@@ -40,6 +40,7 @@ export class QuestionsService {
         const questions = await this.questionRepository.findAll({
             where: { setId },
             include: [{ model: Answer }],
+            order: [['id', 'ASC']]
         });
 
         if (!questions || questions.length <= 0) {
