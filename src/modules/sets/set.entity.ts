@@ -10,5 +10,5 @@ export class Set extends Model<Set> {
     title: string;
 
     @HasMany(() => Question)
-    answers: Question[];
+    questions: Question[];
 }
