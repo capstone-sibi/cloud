@@ -31,10 +31,16 @@ export class QuestionsController {
         return post;
     }
 
-    @Get(':questionId/answers')
+    @Get(':id/answers')
     @ResponseMessage('Successfully retrieved answers by question id')
-    async findAllByQuestionId(@Param('questionId') questionId: number): Promise<Answer[]> {
-        return await this.answersService.findAllByQuestionId(questionId);
+    async findAllByQuestionId(@Param('id') questionId: number): Promise<Answer[]> {
+        const question = await this.answersService.findAllByQuestionId(questionId);
+
+        if (!question) {
+            throw new NotFoundException('This Question doesn\'t exist');
+        }
+        
+        return question;
     }
 
     @Post()
