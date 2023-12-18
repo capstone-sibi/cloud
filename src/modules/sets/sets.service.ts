@@ -20,6 +20,7 @@ export class SetsService {
     async findOne(id): Promise<Set> {
         const set =  await this.setRepository.findOne({
             where: { id },
+            include: [{ model: Question }]
         });
         if (!set) {
             throw new NotFoundException(`Set with id ${id} not found!`);
