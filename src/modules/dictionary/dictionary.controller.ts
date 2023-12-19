@@ -13,4 +13,10 @@ export class DictionaryController {
     async findAll() {
         return await this.dictionaryService.findAll();
     }
+
+    @Post()
+    @ResponseMessage('Successfully add dictionary')
+    async create(@Body() dictionary: DictionaryDTO, @Request() req): Promise<DictionaryEntity> {
+        return await this.dictionaryService.create(dictionary);
+    }
 }
